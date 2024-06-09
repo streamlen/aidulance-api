@@ -6,11 +6,19 @@ import authRoutes from "./routes/auth";
 import appContants from "./constants/app";
 import errorHandler from "./controllers/errorHandler";
 import pool from "./config/db";
+import rateLimiter from "./utils/ratelimiter/ratelimiting";
 
 const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT;
+
+app.use(
+	rateLimiter({
+		limit: 10,
+		windowMS: 5 * 60 * 1000, // 5 minutes
+	})
+);
 
 app.use(`/v${appContants.VERSION}`, userRoutes);
 app.use(`/v${appContants.VERSION}/auth`, authRoutes);
